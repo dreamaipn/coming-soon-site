@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DreamHub — Coming Soon</title>
+
+  <!-- Styling -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      overflow: hidden;
+    }
+
+    /* Particle Canvas */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    /* Neon Wave Overlay */
+    .neon-wave {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 180px;
+      background: radial-gradient(ellipse at bottom, rgba(255, 0, 180, 0.4), transparent 70%);
+      filter: blur(40px);
+      z-index: 0;
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .logo {
+      width: 180px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 10px;
+      letter-spacing: 1.5px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      max-width: 550px;
+      opacity: 0.85;
+      margin-bottom: 35px;
+      line-height: 1.5;
+    }
+
+    .email-form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .email-form input {
+      flex: 1;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    .email-form button {
+      padding: 12px 20px;
+      background: #ff4fd8;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.2s ease;
+    }
+
+    .email-form button:hover {
+      background: #e043c1;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 25px;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      width: 100%;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 2.2rem; }
+      p { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Particle Background -->
+  <canvas id="particles"></canvas>
+  <div class="neon-wave"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+
+    <!-- LOGO -->
+    <img src="your-logo.png" alt="DreamHub Logo" class="logo" />
+
+    <h1>We're Launching Soon</h1>
+    <p>
+      DreamHub is almost here. AI-powered creativity reimagined.  
+      Join our early list to be notified the moment we launch.
+    </p>
+
+    <!-- Email Signup (POST-ready for your backend) -->
+    <form class="email-form" id="notify-form">
+      <input type="email" id="email" placeholder="Enter your email" required />
+      <button type="submit">Notify Me</button>
+    </form>
+
+    <footer>© <span id="year"></span> DreamHub. All rights reserved.</footer>
+  </div>
+
+  <!-- Particle Background Script -->
+  <script>
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.size = Math.random() * 2 + 1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+      draw() {
+        ctx.fillStyle = "rgba(255, 80, 220, 0.7)";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+  <!-- Email Form Handler -->
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    document.getElementById("notify-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+
+      // When your backend endpoint is ready, replace this URL:
+      const endpoint = "https://your-backend.com/api/notify";
+
+      try {
+        await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        alert("Thanks! You'll be notified at launch.");
+      } catch (err) {
+        alert("Could not submit. Please try again later.");
+      }
+    });
+  </script>
+
+</body>
+</html>
